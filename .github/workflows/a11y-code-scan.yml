@@ -1,0 +1,76 @@
+name: "WCAG Accessibility — Code Scan"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  wcag-code-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run WCAG Static Scan (ESLint)
+      run: npm run a11y:lint
+      continue-on-error: true
+
+    - name: Convert report to GitHub annotations
+      run: npm run a11y:report
+
+    - name: Upload ESLint JSON Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: wcag-code-report
+        path: reports/eslint-a11y.json
+
+    - name: Create GitHub PR annotations
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require("fs");
+          const path = "reports/eslint-annotations.json";
+          if (!fs.existsSync(path)) {
+            console.log("No annotations file found.");
+            return;
+          }
+
+          const data = JSON.parse(fs.readFileSync(path, "utf8"));
+          const conclusion = data.errorCount > 0 ? "failure" : "success";
+
+          await github.rest.checks.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: "WCAG Code Scan",
+            head_sha: context.sha,
+            status: "completed",
+            conclusion,
+            output: {
+              title: "WCAG Accessibility Code Scan",
+              summary: `Errors: ${data.errorCount} | Warnings: ${data.warningCount}`,
+              annotations: data.annotations.slice(0, 50)
+            }
+          });
+
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: `### WCAG Accessibility Code Scan  
+            **Errors:** ${data.errorCount}  
+            **Warnings:** ${data.warningCount}  
+            Check the annotations tab for detailed lines.`
+          });

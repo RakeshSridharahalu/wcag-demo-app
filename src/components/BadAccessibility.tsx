@@ -3,16 +3,20 @@ export default function BadAccessibility() {
     <div style={{ padding: "20px" }}>
 
       {/* WCAG VIOLATION: empty alt attribute */}
-      <img src="https://via.placeholder.com/150" alt="" />
+      <img src="https://via.placeholder.com/150" alt=""  role="img"/>
 
       {/* WCAG VIOLATION: button without accessible label */}
-      <button aria-label="">Click</button>
+      <button aria-label=""></button>
 
       {/* WCAG VIOLATION: input without label */}
       <input type="text" aria-label="" />
+      
 
       {/* WCAG VIOLATION: low contrast text */}
-      <p style={{ color: "#ddd", backgroundColor: "#ffffff" }}>
+      {/* <p style={{ color: "#ddd", backgroundColor: "#ffffff" }}>
+        This is low contrast text
+      </p> */}
+       <p style={{ color: "#ddd", backgroundColor: "#ffffff" }}>
         This is low contrast text
       </p>
 

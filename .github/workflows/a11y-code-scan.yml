@@ -13,65 +13,51 @@ jobs:
       checks: write
 
     steps:
-    # Check out code
     - uses: actions/checkout@v4
 
-    # Setup Node
     - name: Set up Node
       uses: actions/setup-node@v4
       with:
         node-version: 18
 
-    # Install deps
     - name: Install dependencies
       run: npm ci
 
-    # ---- STATIC WCAG SCAN (ESLint) ----
-    - name: Run WCAG Static Scan (ESLint)
+    - name: Ensure reports folder exists
+      run: mkdir -p reports
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run WCAG Static Scan
       run: npm run a11y:lint
-      continue-on-error: true
 
-    # ---- RUNTIME WCAG SCAN (Playwright + Axe) ----
-    - name: Run Runtime WCAG Scan (Axe + Playwright)
-      run: npm run a11y:runtime
-      continue-on-error: true
-
-    # ---- Upload static ESLint report BEFORE converting ----
+    - name: Run Runtime WCAG Scan
+      run: npx vite build && npx vite preview --port 5173 --host & sleep 4 && node scripts/axe-playwright.js
     - name: Upload Static WCAG Report
       uses: actions/upload-artifact@v4
       with:
         name: wcag-static-report
         path: reports/eslint-a11y.json
 
-    # ---- Upload runtime Axe report ----
     - name: Upload Runtime WCAG Report
       uses: actions/upload-artifact@v4
       with:
         name: wcag-runtime-report
         path: reports/axe-runtime.json
 
-    # ---- Convert ESLint JSON to GitHub annotations ----
-    - name: Convert report to GitHub annotations
+    - name: Convert to Annotations
       run: npm run a11y:report
 
-    # ---- Create GitHub PR Annotation + Summary ----
     - name: Create GitHub PR annotations
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const fs = require("fs");
-          const path = "reports/eslint-annotations.json";
-
-          if (!fs.existsSync(path)) {
-            console.log("No annotations file found.");
-            return;
-          }
-
-          const data = JSON.parse(fs.readFileSync(path, "utf8"));
+          const data = JSON.parse(fs.readFileSync("reports/eslint-annotations.json","utf8"));
           const conclusion = data.errorCount > 0 ? "failure" : "success";
 
-          // Create PR check
           await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -84,15 +70,4 @@ jobs:
               summary: `Errors: ${data.errorCount} | Warnings: ${data.warningCount}`,
               annotations: data.annotations.slice(0, 50)
             }
-          });
-
-          // Comment on the PR
-          await github.rest.issues.createComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-            body: `### WCAG Accessibility Code Scan  
-            **Errors:** ${data.errorCount}  
-            **Warnings:** ${data.warningCount}  
-            Check the annotations tab for detailed line-by-line WCAG issues.`
           });

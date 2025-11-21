@@ -17,7 +17,8 @@ export default [
       "jsx-a11y/no-autofocus": "warn",
 
       // BUTTON & INTERACTIVITY
-      "jsx-a11y/button-has-content": "error",
+      "jsx-a11y/button-has-text": "error",
+      "jsx-a11y/button-has-accessible-name": "error",
       "jsx-a11y/click-events-have-key-events": "error",
       "jsx-a11y/no-noninteractive-element-interactions": "warn",
       "jsx-a11y/no-static-element-interactions": "warn",

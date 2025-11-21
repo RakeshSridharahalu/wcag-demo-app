@@ -29,12 +29,12 @@ jobs:
     # ---- STATIC WCAG SCAN (ESLint) ----
     - name: Run WCAG Static Scan (ESLint)
       run: npm run a11y:lint
-      continue-on-error: true
+      
 
     # ---- RUNTIME WCAG SCAN (Playwright + Axe) ----
     - name: Run Runtime WCAG Scan (Axe + Playwright)
       run: npm run a11y:runtime
-      continue-on-error: true
+      
 
     # ---- Upload static ESLint report BEFORE converting ----
     - name: Upload Static WCAG Report

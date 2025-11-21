@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "a11y:lint": "mkdir -p reports && eslint -c eslint.a11y.config.js \"src/**/*.{ts,tsx}\" --format json -o reports/eslint-a11y.json || true",
     "a11y:report": "node scripts/eslint-to-github.js",
-    "a11y:runtime": "vite build && vite preview --port 5173 --host & npx wait-on http://localhost:5173 && node scripts/axe-playwright.js"
+    "a11y:runtime": "vite build && start /B vite preview --port 5173 --host && npx wait-on http://localhost:5173 && node scripts/axe-playwright.js"
   },
   "dependencies": {
     "vite": "^5.2.0",

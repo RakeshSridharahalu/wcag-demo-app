@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "a11y:lint": "eslint -c eslint.a11y.config.js \"src/**/*.{ts,tsx}\" --format json -o reports/eslint-a11y.json || cmd /c exit 0",
+    "a11y:lint": "eslint -c eslint.a11y.config.js \"src/**/*.{ts,tsx}\" --format json -o reports/eslint-a11y.json || true",
     "a11y:report": "node scripts/eslint-to-github.js",
     "a11y:runtime": "vite build && node scripts/axe-playwright.js"
   },

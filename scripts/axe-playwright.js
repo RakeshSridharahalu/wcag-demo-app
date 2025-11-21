@@ -1,22 +1,18 @@
 import { chromium } from "playwright";
+import { AxeBuilder } from "@axe-core/playwright";
 import fs from "fs";
 import path from "path";
-import AxeBuilder from "@axe-core/playwright";
 
 async function runA11yScan() {
   const browser = await chromium.launch();
-
-  // REQUIRED by latest axe-core/playwright
-  const context = await browser.newContext();
+  const context = await browser.newContext();   // Required by axe-core/playwright
   const page = await context.newPage();
 
-  // Load your preview build
-  await page.goto("http://localhost:5173/", { waitUntil: "networkidle" });
+  await page.goto("http://localhost:5173");
 
-  // Run WCAG scan
   const results = await new AxeBuilder({ page }).analyze();
 
-  // Save report
+  // Ensure reports folder exists
   const outDir = path.join(process.cwd(), "reports");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
 

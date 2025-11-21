@@ -3,16 +3,14 @@ export default function BadAccessibility() {
     <div style={{ padding: "20px" }}>
 
       {/* WCAG VIOLATION: empty alt attribute */}
-      {/* <img src="https://via.placeholder.com/150" alt="" /> */}
-      <img src="https://via.placeholder.com/150" />
+      <img src="https://via.placeholder.com/150" alt=""  role="img"/>
 
       {/* WCAG VIOLATION: button without accessible label */}
-      {/* <button aria-label="">Click</button> */}
-      <button></button>
+      <button aria-label=""></button>
 
       {/* WCAG VIOLATION: input without label */}
-      {/* <input type="text" aria-label="" /> */}
-      <input type="text" />
+      <input type="text" aria-label="" />
+      
 
       {/* WCAG VIOLATION: low contrast text */}
       {/* <p style={{ color: "#ddd", backgroundColor: "#ffffff" }}>
@@ -23,17 +21,6 @@ export default function BadAccessibility() {
       </p>
 
       {/* WCAG VIOLATION: non-interactive element acting as button */}
-      {/* <div
-        onClick={() => alert("clicked")}
-        style={{
-          backgroundColor: "#eee",
-          padding: "10px",
-          cursor: "pointer"
-        }}
-        role="button"
-      >
-        Click me
-      </div> */}
       <div
         onClick={() => alert("clicked")}
         style={{
@@ -41,6 +28,7 @@ export default function BadAccessibility() {
           padding: "10px",
           cursor: "pointer"
         }}
+        role="button"
       >
         Click me
       </div>

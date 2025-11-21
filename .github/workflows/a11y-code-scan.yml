@@ -26,15 +26,17 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    # ---- Install Playwright Browsers (IMPORTANT) ----
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
     # ---- STATIC WCAG SCAN (ESLint) ----
     - name: Run WCAG Static Scan (ESLint)
       run: npm run a11y:lint
-      
 
     # ---- RUNTIME WCAG SCAN (Playwright + Axe) ----
     - name: Run Runtime WCAG Scan (Axe + Playwright)
       run: npm run a11y:runtime
-      
 
     # ---- Upload static ESLint report BEFORE converting ----
     - name: Upload Static WCAG Report

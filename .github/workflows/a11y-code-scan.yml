@@ -33,8 +33,7 @@ jobs:
       run: npm run a11y:lint
 
     - name: Run Runtime WCAG Scan
-      run: vite build && vite preview --port 5173 --host & sleep 4 && node scripts/axe-playwright.js
-
+      run: npx vite build && npx vite preview --port 5173 --host & sleep 4 && node scripts/axe-playwright.js
     - name: Upload Static WCAG Report
       uses: actions/upload-artifact@v4
       with:
